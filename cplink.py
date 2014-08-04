@@ -16,13 +16,20 @@ So, it unlinks two things but replaces the link with the original source.
 
 import argparse
 import os
+import shutil
 import sys
 
 def cplink(directory, verbose=False):
 	try:
-		source = readlink(directory)
+		source = os.readlink(directory)
+		if verbose:
+			print "Read link " + directory + " -> " + source
 		os.remove(directory)
+		if verbose:
+			print "Deleted link " + directory
 		shutil.copytree(source, directory)
+		if verbose:
+			print "Recursively copying " + source + " to " + directory
 	except:
 		# Because isn't this everyone's favorite error message?
 		print "Error: no such file or directory."
@@ -36,12 +43,12 @@ def main():
 	args = parser.parse_args()
 
 	# Do some sanitation
-	# I know that "it's better to ask forgiveness than permission."
+	# I know that "it's better to ask forgiveness than permission", but meh
 	directory = os.path.abspath(args.directory)
 	if not os.path.exists(directory):
 		print "Error: no such directory."
 
-
+	cplink(directory, args.verbose)
 
 if __name__ == '__main__':
 	main()
