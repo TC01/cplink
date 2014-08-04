@@ -20,8 +20,13 @@ import shutil
 import sys
 
 def cplink(directory, verbose=False):
+	current = os.getcwd()
 	try:
 		source = os.readlink(directory)
+		# We need to get ../ from the director, then chdir there, then abspath.
+		relative = directory[:directory.rfind("/") + 1]
+		os.chdir(relative)
+		source = os.path.abspath(source)
 		if verbose:
 			print "Read link " + directory + " -> " + source
 		os.remove(directory)
@@ -33,6 +38,7 @@ def cplink(directory, verbose=False):
 	except:
 		# Because isn't this everyone's favorite error message?
 		print "Error: no such file or directory."
+	os.chdir(current)
 
 def main():
 	"""Main function of script."""
@@ -48,7 +54,17 @@ def main():
 	if not os.path.exists(directory):
 		print "Error: no such directory."
 
-	cplink(directory, args.verbose)
+	if os.path.islink(directory):
+		link = os.readlink(directory)
+		cplink(directory, args.verbose)
+	elif args.recursive:
+		for path, dirs, files in os.walk(directory):
+			for newdir in dirs:
+				newdir = os.path.join(path, newdir)
+				if os.path.islink(newdir):
+					cplink(newdir, args.verbose)
+	else:
+		print "Error: please run with -r (--recursive) for recursive parsing of links."
 
 if __name__ == '__main__':
 	main()
