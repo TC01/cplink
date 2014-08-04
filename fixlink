@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# The script that started this...
+
+LENGTH="`expr length $1`"
+LENGTH="`expr ${LENGTH} - 1`"
+
+NAME="`echo $1 | cut -c-$LENGTH`"
+LOCATION="`readlink $NAME`"
+
+rm $NAME
+cp -r $LOCATION $NAME
