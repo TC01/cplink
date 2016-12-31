@@ -30,15 +30,15 @@ def cplink(directory, verbose=False):
 
 	source = os.path.abspath(source)
 	if verbose:
-		print "Read link " + directory + " -> " + source
+		print("Read link " + directory + " -> " + source)
 
 	os.remove(directory)
 	if verbose:
-		print "Deleted link " + directory
+		print("Deleted link " + directory)
 
 	shutil.copytree(source, directory)
 	if verbose:
-		print "Recursively copying " + source + " to " + directory
+		print("Recursively copying " + source + " to " + directory)
 
 	os.chdir(current)
 
@@ -54,7 +54,7 @@ def main():
 	# I know that "it's better to ask forgiveness than permission", but meh
 	directory = os.path.abspath(args.directory)
 	if not os.path.exists(directory):
-		print "Error: no such directory."
+		print("Error: no such directory.")
 
 	if os.path.islink(directory):
 		link = os.readlink(directory)
@@ -73,7 +73,7 @@ def main():
 					except:
 						print("Error: no such file or directory.")
 	else:
-		print "Error: please run with -r (--recursive) for recursive parsing of links."
+		print("Error: please run with -r (--recursive) for recursive parsing of links.")
 
 if __name__ == '__main__':
 	main()
