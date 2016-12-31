@@ -42,6 +42,14 @@ def cplink(directory, verbose=False):
 
 	os.chdir(current)
 
+def cplink_recursive(directory, verbose=False):
+	"""	Implement recursive logic; cplink function does not recurse."""
+	for path, dirs, files in os.walk(directory):
+		for newdir in dirs:
+			newdir = os.path.join(path, newdir)
+			if os.path.islink(newdir):
+				cplink(newdir, verbose)
+
 def main():
 	"""Main function of script."""
 	parser = argparse.ArgumentParser(description="Tool to unlink two directories and make a unique copy in place of the link.")
@@ -64,14 +72,10 @@ def main():
 			# Because isn't this everyone's favorite error message?
 			print("Error: no such file or directory.")
 	elif args.recursive:
-		for path, dirs, files in os.walk(directory):
-			for newdir in dirs:
-				newdir = os.path.join(path, newdir)
-				if os.path.islink(newdir):
-					try:
-						cplink(newdir, args.verbose)
-					except:
-						print("Error: no such file or directory.")
+		try:
+			cplink_recursive(newdir, args.verbose)
+		except:
+			print("Error: no such file or directory.")
 	else:
 		print("Error: please run with -r (--recursive) for recursive parsing of links.")
 
