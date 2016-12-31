@@ -36,7 +36,10 @@ def cplink(directory, verbose=False):
 	if verbose:
 		print("Deleted link " + directory)
 
-	shutil.copytree(source, directory)
+	if os.path.isdir(source):
+		shutil.copytree(source, directory)
+	else:
+		shutil.copy2(source, directory)
 	if verbose:
 		print("Recursively copying " + source + " to " + directory)
 
@@ -45,10 +48,15 @@ def cplink(directory, verbose=False):
 def cplink_recursive(directory, verbose=False):
 	"""	Implement recursive logic; cplink function does not recurse."""
 	for path, dirs, files in os.walk(directory):
+		# We need to check dirs and files-- both could be links.
 		for newdir in dirs:
 			newdir = os.path.join(path, newdir)
 			if os.path.islink(newdir):
 				cplink(newdir, verbose)
+		for newfile in files:
+			newfile = os.path.join(path, newfile)
+			if os.path.islink(newfile):
+				cplink(newfile, verbose)
 
 def main():
 	"""Main function of script."""
